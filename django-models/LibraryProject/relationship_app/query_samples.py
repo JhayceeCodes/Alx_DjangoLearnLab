@@ -10,4 +10,4 @@ library_name = "LASU Library"
 library = Library.objects.get(name=library_name)
 library.books.all()
 
-Librarian.objects.filter(library_id=1).all()
+Librarian.objects.objects.get(library=library)
