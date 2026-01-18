@@ -1,94 +1,129 @@
-from django.shortcuts import render
-from .models import Book
-from .models import Library
+from django.shortcuts import render, redirect,  get_object_or_404
+from django.contrib.auth.forms import UserCreationForm , AuthenticationForm
 from django.views.generic.detail import DetailView
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
+from .models import Library, Book
+from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponseForbidden
-from .models import UserProfile
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
+from .forms import BookForm  # Make sure you have a BookForm for create/edit
 
+
+# Function-based view to list all books
 def list_books(request):
-	books = Book.objects.all()
-	return render(request, "relationship_app/list_books.html", {'books': books})
+    books = Book.objects.all()
+    return render(request, "relationship_app/list_books.html", {"books": books})
 
+
+
+# Class-based view for library details
 class LibraryDetailView(DetailView):
-	model = Library
-	template_name = 'relationship_app/library_detail.html'
-	context_object_name = 'library'
-def register(request):
+    model = Library
+    template_name = "relationship_app/library_detail.html"
+    context_object_name = "library"
+
+
+#registration
+def register_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  
-            return redirect('login')  
+            login(request, user) #Logs in the user automatically
+            messages.success(request, "Registration Successful!")
+            return redirect('home')
     else:
         form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
+    return render(request, "relationship_app/register.html", {'form':form})
 
-class CustomLoginView(LoginView):
-    template_name = 'relationship_app/login.html'
 
-class CustomLogoutView(LogoutView):
-    template_name = 'relationship_app/logout.html'
-	
+#login view
+def login_view(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, "logged in successful!")
+                return redirect ("home")
+    else:
+        form = AuthenticationForm()
+    return render(request, "relationship_app/login.html", {'form':form})
+
+
+#logout view
+def logout_view(request):
+    logout (request)
+    messages.info((request, "You have successfully logged out!"))
+    return render(request, "relationship_app/logout.html")
+
+
+
+# Helper functions to check user roles
 def is_admin(user):
-    return user.userprofile.role == 'Admin'
+    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"
 
 def is_librarian(user):
-    return user.userprofile.role == 'Librarian'
+    return hasattr(user, "userprofile") and user.userprofile.role == "Librarian"
 
 def is_member(user):
-    return user.userprofile.role == 'Member'
+    return hasattr(user, "userprofile") and user.userprofile.role == "Member"
 
+
+# Views restricted by roles
 @login_required
 @user_passes_test(is_admin)
 def admin_view(request):
-    return render(request, 'relationship_app/admin_view.html')
+    return render(request, "relationship_app/admin_view.html")
+
 
 @login_required
 @user_passes_test(is_librarian)
 def librarian_view(request):
-    return render(request, 'relationship_app/librarian_view.html')
+    return render(request, "relationship_app/librarian_view.html")
+
 
 @login_required
 @user_passes_test(is_member)
 def member_view(request):
-    return render(request, 'relationship_app/member_view.html')
+    return render(request, "relationship_app/member_view.html")
 
-@permission_required('relationship_app.can_add_book', raise_exception=True)
+
+# Create Book
+@permission_required("relationship_app.can_add_book", raise_exception=True)
 def add_book(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        author_id = request.POST.get('author')
-        publication_year = request.POST.get('publication_year')
+    if request.method == "POST":
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("book_list")
+    else:
+        form = BookForm()
+    return render(request, "relationship_app/add_book.html", {"form": form})
 
-        book = Book(title=title, author_id=author_id, publication_year=publication_year)
-        book.save()
-        return redirect('book_list')  
-    return render(request, 'relationship_app/add_book.html')
 
-@permission_required('relationship_app.can_change_book', raise_exception=True)
+# Edit Book
+@permission_required("relationship_app.can_change_book", raise_exception=True)
 def edit_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
+    if request.method == "POST":
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect("book_list")
+    else:
+        form = BookForm(instance=book)
+    return render(request, "relationship_app/edit_book.html", {"form": form, "book": book})
 
-    if request.method == 'POST':
-        book.title = request.POST.get('title')
-        book.author_id = request.POST.get('author')
-        book.publication_year = request.POST.get('publication_year')
-        book.save()
-        return redirect('book_list')  
-    return render(request, 'relationship_app/edit_book.html', {'book': book})
 
-@permission_required('relationship_app.can_delete_book', raise_exception=True)
+# Delete Book
+@permission_required("relationship_app.can_delete_book", raise_exception=True)
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-
-    if request.method == 'POST':
+    if request.method == "POST":
         book.delete()
-        return redirect('book_list')  
-
-    return render(request, 'relationship_app/delete_book.html', {'book': book})
+        return redirect("book_list")
+    return render(request, "relationship_app/delete_book.html", {"book": book})
