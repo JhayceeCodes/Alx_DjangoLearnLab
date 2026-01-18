@@ -59,13 +59,13 @@ def login_view(request):
     return render(request, 'registration/login.html', {'form': form})
 
 def is_admin(user):
-    return user.profile.role == "admin"
+    return user.userprofile.role == "Admin"
 
 def is_librarian(user):
-    return user.profile.role == "librarian"
+    return user.userprofile.role == "Librarian"
 
 def is_member(user):
-    return user.profile.role == "member"
+    return user.userprofile.role == "Member"
 
 @user_passes_test(is_admin, login_url="/login")
 def admin_view(request):
