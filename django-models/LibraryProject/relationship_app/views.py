@@ -10,35 +10,8 @@ from django.views.generic import CreateView
 from django.contrib import messages
 from .forms import BookForm
 from django.contrib.auth.decorators import permission_required, user_passes_test, login_required, permission_required
-from .models import Library, Book
+from .models import Library, Book, UserProfile
 
-
-def is_admin(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"
-
-def is_librarian(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Librarian"
-
-def is_member(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Member"
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_view(request):
-    return render(request, "relationship_app/admin_view.html")
-
-
-@login_required
-@user_passes_test(is_librarian)
-def librarian_view(request):
-    return render(request, "relationship_app/librarian_view.html")
-
-
-@login_required
-@user_passes_test(is_member)
-def member_view(request):
-    return render(request, "relationship_app/member_view.html")
 
 
 def list_books(request):
@@ -88,7 +61,29 @@ def login_view(request):
     
     return render(request, 'registration/login.html', {'form': form})
 
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
 
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+@login_required
+@user_passes_test(is_admin)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@login_required
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@login_required
+@user_passes_test(is_member)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
 
 
 
