@@ -1,4 +1,16 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class UserProfile(User):
+    ROLE_CHOICES = [
+        ("admin", "Admin"),
+        ("librarian", "Librarian"),
+        ("member", "Member")
+    ]
+    user = models.OneToOneField(User)
+    role = models.CharField(choices=ROLE_CHOICES, default="member")
 
 class Author(models.Model):
     name = models.CharField(max_length=50)
