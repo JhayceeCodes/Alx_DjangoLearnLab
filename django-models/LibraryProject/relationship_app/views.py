@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib import messages
 from .forms import BookForm
-from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from django.contrib.auth.decorators import permission_required, user_passes_test, login_required, permission_required
 from .models import Library, Book
 
 
