@@ -3,7 +3,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic import ListView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
