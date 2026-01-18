@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.contrib import messages
 from .models import Library, Book
 
 def list_books(request):
@@ -24,10 +25,17 @@ class LibraryDetailView(DetailView):
       model = Book
 
 
-class SignUpView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'relationship_app/signup.html'
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) #Logs in the user automatically
+            messages.success(request, "Registration Successful!")
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, "relationship_app/register.html", {'form':form})
 
 
 def login_view(request):
