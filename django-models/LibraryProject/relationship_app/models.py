@@ -5,9 +5,9 @@ User = get_user_model()
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
-        ("admin", "Admin"),
-        ("librarian", "Librarian"),
-        ("member", "Member")
+        ("Admin", "Admin"),
+        ("Librarian", "Librarian"),
+        ("Member", "Member")
     ]
     user = models.OneToOneField(User)
     role = models.CharField(choices=ROLE_CHOICES, default="member")
