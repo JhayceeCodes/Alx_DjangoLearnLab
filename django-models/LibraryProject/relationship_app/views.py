@@ -6,24 +6,24 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.decorators import permission_required
-from .forms import BookForm  # Make sure you have a BookForm for create/edit
+from .forms import BookForm  
 
 
-# Function-based view to list all books
 def list_books(request):
-    books = Book.objects.all()
-    return render(request, "relationship_app/list_books.html", {"books": books})
+      """Retrieves all books and renders a template displaying the list."""
+      books = Book.objects.all() 
+      context = {'books': books} 
+      return render(request, 'relationship_app/list_books.html', context)
 
 
 
-# Class-based view for library details
+
 class LibraryDetailView(DetailView):
     model = Library
     template_name = "relationship_app/library_detail.html"
     context_object_name = "library"
 
 
-#registration
 def register_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -37,7 +37,6 @@ def register_view(request):
     return render(request, "relationship_app/register.html", {'form':form})
 
 
-#login view
 def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
@@ -54,7 +53,6 @@ def login_view(request):
     return render(request, "relationship_app/login.html", {'form':form})
 
 
-#logout view
 def logout_view(request):
     logout (request)
     messages.info((request, "You have successfully logged out!"))
@@ -62,18 +60,16 @@ def logout_view(request):
 
 
 
-# Helper functions to check user roles
 def is_admin(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"
+    return user.userprofile.role == "Admin"
 
 def is_librarian(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Librarian"
+    return user.userprofile.role == "Librarian"
 
 def is_member(user):
-    return hasattr(user, "userprofile") and user.userprofile.role == "Member"
+    return user.userprofile.role == "Member"
 
 
-# Views restricted by roles
 @login_required
 @user_passes_test(is_admin)
 def admin_view(request):
@@ -92,7 +88,6 @@ def member_view(request):
     return render(request, "relationship_app/member_view.html")
 
 
-# Create Book
 @permission_required("relationship_app.can_add_book", raise_exception=True)
 def add_book(request):
     if request.method == "POST":
@@ -105,7 +100,6 @@ def add_book(request):
     return render(request, "relationship_app/add_book.html", {"form": form})
 
 
-# Edit Book
 @permission_required("relationship_app.can_change_book", raise_exception=True)
 def edit_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
@@ -119,7 +113,6 @@ def edit_book(request, book_id):
     return render(request, "relationship_app/edit_book.html", {"form": form, "book": book})
 
 
-# Delete Book
 @permission_required("relationship_app.can_delete_book", raise_exception=True)
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
