@@ -9,5 +9,5 @@ class BookAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomUser, CustomUserAdmin)
-class CustomUserAdmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = ("username", "date_of_birth")
