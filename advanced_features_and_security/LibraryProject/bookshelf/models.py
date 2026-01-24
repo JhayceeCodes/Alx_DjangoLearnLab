@@ -1,12 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField()
     profile_photo = models.ImageField()
 
-class CustomUserManager(UserManager):
+class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, date_of_birth=None, profile_photo=None):
         if not username:
             raise ValueError("Username is required")
@@ -15,8 +15,8 @@ class CustomUserManager(UserManager):
         user.save(using=self.db)
         return user
     
-    def create_superuser(self, username, email, password, **extra_fields):
-        return super().create_superuser(username, email, password, **extra_fields)
+    def create_superuser(self, username, password):
+        return self.create_user(username=username, password=password)
 
 
 class Book(models.Model):
