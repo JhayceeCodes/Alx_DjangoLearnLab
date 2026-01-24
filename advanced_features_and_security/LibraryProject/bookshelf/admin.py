@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, CustomUser
+from .models import Book, CustomUser, CustomUserAdmin
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -8,6 +8,6 @@ class BookAdmin(admin.ModelAdmin):
     list_filter = ("publication_year",)
 
 
-@admin.register(CustomUser)
+@admin.register(CustomUser, CustomUserAdmin)
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ("username", "date_of_birth")
