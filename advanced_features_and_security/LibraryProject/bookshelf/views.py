@@ -11,7 +11,7 @@ def create_book(request):
 
 #can_list --- users with this permission can view books
 @permission_required('book_shelf.can_view', raise_exception=True)
-def list_books(request):
+def book_list(request):
       """Retrieves all books and renders a template displaying the list."""
       books = Book.objects.all() 
       context = {'books': books} 

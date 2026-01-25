@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import permission_required
 from .forms import BookForm  
 
 
-def list_books(request):
+def book_lis(request):
       """Retrieves all books and renders a template displaying the list."""
       books = Book.objects.all() 
       context = {'books': books} 
