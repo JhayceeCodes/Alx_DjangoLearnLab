@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required
 from .models import Book
 
@@ -11,10 +12,11 @@ def create_book(request):
 #can_list --- users with this permission can view books
 @permission_required('book_shelf.can_view', raise_exception=True)
 def list_books(request):
-    books = Book.objects.all()
-    return HttpResponse({
-        "books": books
-    })
+      """Retrieves all books and renders a template displaying the list."""
+      books = Book.objects.all() 
+      context = {'books': books} 
+      return render(request, 'relationship_app/list_books.html', context)
+
 
 
 #can_edit --- users with this permission can edit book details
