@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 
 class CustomUser(AbstractUser):
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True)
     profile_photo = models.ImageField(null=True, blank=True)
 
 class CustomUserManager(UserManager):
