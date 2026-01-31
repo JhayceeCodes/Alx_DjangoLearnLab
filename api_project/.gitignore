@@ -1,0 +1,37 @@
+# Python
+# Compiled source
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.Python
+# Distributions and packaging
+dist/
+build/
+
+# Virtual environment
+venv/
+env/
+.venv/
+# You can also ignore a common virtualenv directory globally.
+# For example, if you use a central directory for all your virtual environments, 
+# you can configure Git to ignore it in all repositories.
+
+# Django-specific
+*.log
+*.pot
+*.mo
+# SQLite database file
+db.sqlite3
+/media/
+# Security and environment files
+.env
+local_settings.py
+# Collectstatic files (optional, depends on deployment strategy)
+# staticfiles/ 
+
+# IDE-specific files (e.g., PyCharm, VS Code)
+.idea/
+.vscode/
+*.swp
