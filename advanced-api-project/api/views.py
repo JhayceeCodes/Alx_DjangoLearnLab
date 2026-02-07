@@ -1,17 +1,18 @@
 from django.shortcuts import render
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+#from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework
+from rest_framework import generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .serializers import BookSerializer
 from .models import Book
 
-class BookListView(ListAPIView):
+class BookListView(generics.ListAPIView):
     """Return a list of all books."""
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     filter_backends = [
-        DjangoFilterBackend,
+        rest_framework.DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
     ]
@@ -24,14 +25,14 @@ class BookListView(ListAPIView):
     
     
 
-class BookDetailView(RetrieveAPIView):
+class BookDetailView(generics.RetrieveAPIView):
     """Return details of a single book."""
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
 
-class BookCreateView(CreateAPIView):
+class BookCreateView(generics.CreateAPIView):
     """Allow authenticated users to create a book."""
     permission_classes = [IsAuthenticated]
     queryset = Book.objects.all()
@@ -39,7 +40,7 @@ class BookCreateView(CreateAPIView):
     
 
 
-class BookUpdateView(UpdateAPIView):
+class BookUpdateView(generics.UpdateAPIView):
     """Allow authenticated users to update a book."""
     permission_classes = [IsAuthenticated]
     queryset = Book.objects.all()
@@ -47,7 +48,7 @@ class BookUpdateView(UpdateAPIView):
     
 
 
-class BookDeleteView(DestroyAPIView):
+class BookDeleteView(generics.DestroyAPIView):
     """Allow authenticated users to delete a book."""
     permission_classes = [IsAuthenticated]
     queryset = Book.objects.all()
