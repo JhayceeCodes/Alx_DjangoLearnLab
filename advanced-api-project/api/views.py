@@ -31,7 +31,7 @@ class BookUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class BookDestroyView(DestroyAPIView):
+class BookDeleteView(DestroyAPIView):
     """Allow authenticated users to delete a book."""
     queryset = Book.objects.all()
     serializer_class = BookSerializer
