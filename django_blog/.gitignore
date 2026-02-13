@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Database
+# SQLite database file - change name if yours is different
+db.sqlite3
+
+# Media and static files (generated during deployment)
+# The "media" folder often contains user-uploaded files that are not part of the source code
+media/
+# The "static" folder often contains collected static files during deployment
+static/
+
+# Sensitive configuration files (like those containing secret keys)
+local_settings.py
+
+# IDE configuration files (e.g., PyCharm, VS Code)
+.idea/
+.vscode/
+
+# Operating system files
+.DS_Store
