@@ -1,0 +1,37 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Profile | Django Blog{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+
+    <div class="profile-header">
+        <h2>Manage Your Profile</h2>
+        <p>Update your account information below</p>
+    </div>
+
+    {% if user.profile.profile_picture %}
+        <div class="profile-picture-preview">
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture">
+        </div>
+    {% endif %}
+
+
+    <form method="POST" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
+
+        <div class="form-section">
+            <h3>Account Information</h3>
+            {{ u_form.as_p }}
+        </div>
+
+        <div class="form-section">
+            <h3>Profile Information</h3>
+            {{ p_form.as_p }}
+        </div>
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
+
+</div>
+{% endblock %}
