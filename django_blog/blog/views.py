@@ -174,7 +174,7 @@ class TagListView(ListView):
     context_object_name = "tags"
 
 
-class PostsByTagListView(ListView):
+class PostByTagListView(ListView):
     model = Post
     template_name = "blog/posts_by_tag.html"
     context_object_name = "posts"
