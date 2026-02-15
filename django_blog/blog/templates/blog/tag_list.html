@@ -1,0 +1,14 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+<h2>All Tags</h2>
+
+{% for tag in tags %}
+    <a href="{% url 'posts-by-tag' tag.slug %}" class="badge bg-secondary">
+        {{ tag.name }}
+    </a>
+{% empty %}
+    <p>No tags available.</p>
+{% endfor %}
+
+{% endblock %}

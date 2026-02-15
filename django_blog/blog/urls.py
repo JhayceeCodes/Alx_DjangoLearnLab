@@ -1,6 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
-from .views import home, register_view, profile, PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, CommentCreateView, CommentDeleteView, CommentUpdateView, TagListView, PostsByTagView
+from .views import home, register_view, profile, PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, CommentCreateView, CommentDeleteView, CommentUpdateView, TagListView, PostsByTagView, SearchResultsView
 
 urlpatterns =[
     path("", home, name="home"),
@@ -30,6 +30,7 @@ urlpatterns =[
     ),
     path("tags/", TagListView.as_view(), name="tag-list"),
     path("tags/<str:tag_name>/", PostsByTagView.as_view(), name="posts-by-tag"),
+    path("search/", SearchResultsView.as_view(), name="search"),
 
   
 ]

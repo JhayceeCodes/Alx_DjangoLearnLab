@@ -6,7 +6,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import UserPassesTestMixin
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, PostForm, CommentForm
-from .models import Post, Comment, Tag
+from taggit.models import Tag
+from django.db.models import Q
+from .models import Post, Comment
+
 
 
 def home(request):
@@ -164,3 +167,44 @@ class PostsByTagView(ListView):
         context["tag"] = self.tag
         return context
 
+
+class TagListView(ListView):
+    model = Tag
+    template_name = "blog/tag_list.html"
+    context_object_name = "tags"
+
+
+class PostsByTagView(ListView):
+    model = Post
+    template_name = "blog/posts_by_tag.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        self.tag = get_object_or_404(Tag, slug=self.kwargs["tag_slug"])
+        return Post.objects.filter(tags__in=[self.tag])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tag"] = self.tag
+        return context
+
+
+class SearchResultsView(ListView):
+    model = Post
+    template_name = "blog/search_results.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q")
+        return context
