@@ -1,11 +1,15 @@
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, UserSerializer
 
+User = get_user_model()
 
 class RegisterView(APIView):
 
@@ -50,3 +54,37 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = ProfileSerializer(request.user)
         return Response(serializer.data)
+    
+
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+
+    @action(detail=True, methods=["post"])
+    def follow(self, request, pk=None):
+        user_to_follow = self.get_object()
+
+        if request.user == user_to_follow:
+            return Response({"error": "You cannot follow yourself."}, status=400)
+        
+        if request.user.following.filter(id=user_to_follow.id).exists():
+            return Response({"error": "Already following this user."}, status=400)
+
+        request.user.following.add(user_to_follow)
+        return Response({"message": "User followed successfully."})
+
+    @action(detail=True, methods=["post"])
+    def unfollow(self, request, pk=None):
+        user_to_unfollow = self.get_object()
+
+        if not request.user.following.filter(id=user_to_unfollow.id).exists():
+            return Response({"error": "You are not following this user."}, status=400)
+    
+        request.user.following.remove(user_to_unfollow)
+        return Response({"message": "User unfollowed successfully."})
