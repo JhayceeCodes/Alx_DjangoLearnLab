@@ -9,6 +9,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, UserSerializer
+from .models import CustomUser
+
 
 User = get_user_model()
 
@@ -51,7 +53,7 @@ class LoginView(APIView):
 
 class ProfileView(generics.GenericAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         serializer = self.get_serializer(request.user)
@@ -59,7 +61,7 @@ class ProfileView(generics.GenericAPIView):
     
 
 class UserViewSet(ModelViewSet):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
