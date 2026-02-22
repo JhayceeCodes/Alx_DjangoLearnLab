@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, generics
 from rest_framework.views import APIView
-
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -60,35 +60,65 @@ class ProfileView(generics.GenericAPIView):
         return Response(serializer.data)
     
 
-class UserViewSet(ModelViewSet):
-    queryset = CustomUser.objects.all()
+# class UserViewSet(ModelViewSet):
+#     queryset = CustomUser.objects.all()
+#     permission_classes = [permissions.IsAuthenticated]
+#     serializer_class = UserSerializer
+
+#     def get_serializer_context(self):
+#         context = super().get_serializer_context()
+#         context["request"] = self.request
+#         return context
+
+#     @action(detail=True, methods=["post"])
+#     def follow(self, request, pk=None):
+#         user_to_follow = self.get_object()
+
+#         if request.user == user_to_follow:
+#             return Response({"error": "You cannot follow yourself."}, status=400)
+        
+#         if request.user.following.filter(id=user_to_follow.id).exists():
+#             return Response({"error": "Already following this user."}, status=400)
+
+#         request.user.following.add(user_to_follow)
+#         return Response({"message": "User followed successfully."})
+
+#     @action(detail=True, methods=["post"])
+#     def unfollow(self, request, pk=None):
+#         user_to_unfollow = self.get_object()
+
+#         if not request.user.following.filter(id=user_to_unfollow.id).exists():
+#             return Response({"error": "You are not following this user."}, status=400)
+    
+#         request.user.following.remove(user_to_unfollow)
+#         return Response({"message": "User unfollowed successfully."})
+
+
+
+class FollowUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["request"] = self.request
-        return context
-
-    @action(detail=True, methods=["post"])
-    def follow(self, request, pk=None):
-        user_to_follow = self.get_object()
+    def post(self, request, user_id):
+        user_to_follow = get_object_or_404(CustomUser, id=user_id)
 
         if request.user == user_to_follow:
             return Response({"error": "You cannot follow yourself."}, status=400)
-        
+
         if request.user.following.filter(id=user_to_follow.id).exists():
             return Response({"error": "Already following this user."}, status=400)
 
         request.user.following.add(user_to_follow)
         return Response({"message": "User followed successfully."})
 
-    @action(detail=True, methods=["post"])
-    def unfollow(self, request, pk=None):
-        user_to_unfollow = self.get_object()
+
+class UnfollowUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
+        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
 
         if not request.user.following.filter(id=user_to_unfollow.id).exists():
             return Response({"error": "You are not following this user."}, status=400)
-    
+
         request.user.following.remove(user_to_unfollow)
         return Response({"message": "User unfollowed successfully."})
