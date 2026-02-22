@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate
+from rest_framework import permissions, generics
 from rest_framework.views import APIView
+
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
@@ -48,17 +49,18 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfileView(APIView):
+class ProfileView(generics.GenericAPIView):
+    serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = ProfileSerializer(request.user)
+        serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_serializer_context(self):
